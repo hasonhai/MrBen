@@ -1,0 +1,52 @@
+
+[GENERAL]
+# Set name of the configuration
+config.name=“sample-config”
+# Set default user for access server
+config.user=“root”
+# Set default private key for access server
+config.key=“privatekey.cer”
+
+[NODES]
+# List of nodes joining the test
+# hostname:user:privatekey
+# hostname:: means use default setting for the host
+vm1:root:root.key
+vm2:root:root.key
+vm3:sonhai:sonhai.key
+vm4::
+
+[NETWORK]
+# Scenario for network measurement
+# syntax: sender>receiver:protocol:duration/size:num_connections
+# sender: hostname of sender
+# receiver: hostname of receiver
+# protocol: tcp or udp
+# duration: time for test connection in second: s
+# size: size to transfer for each connection in byte: K,M,G
+# parallel: send in parallel; series: send in series from top to bottom
+# when there are multiple blocks, run each block then move to next block (like series)
+[parallel]
+vm1>vm2:tcp:60s:2 
+vm2>vm3:udp:20M:1
+vm3>vm4:tcp:60s:2
+[parallel]
+vm1>vm2:tcp:60s:2 
+vm3>vm4:udp:20M:2
+[series]
+vm1>vm2:tcp:60s:2 
+vm2>vm3:udp:20M:2
+vm3>vm4:tcp:60s:2
+[parallel]
+vm1>vm2:tcp:60s:2 
+vm2>vm3:udp:20M:2
+vm3>vm4:tcp:60s:2
+
+# Scenario for disk measurement
+[DISK]
+# type of disk test: select a .fio file. There will be some files to choose.
+disk.config=“randomseek.fio”
+# By default, test all the nodes, if want to exclude nodes, put them in ignoring tag
+[ignore]
+vm2
+
