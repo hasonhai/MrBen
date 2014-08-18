@@ -1,0 +1,50 @@
+Install FIO on CentOS 6.4 Minimal
+# yum install libaio* gcc wget make
+# wget http://brick.kernel.dk/snaps/fio-2.1.11.tar.gz
+# tar xvzf fio-2.1.11.tar.gz
+# cd fio-2.1.11
+# ./configure
+# make
+# make install
+
+Introduction
+
+Fio is short for Flexible IO, a versatile IO workload generator. Back in 2005, Jens Axboe, the backbone behind and author of the IO stack in the Linux kernel, was weary of constantly writing one-off test programs to benchmark or verify changes to the Linux IO subsystem. As a result, fio was born to make the job a lot easier. It was flexible enough to allow detailed workload setups, and it contained the necessary reporting to make sense of the data at completion. Jens continued working on fio when he joined Oracle and, later, Fusion-io. Today, the fio community of users is active and engaged in development, and consequently they continually develop fio and implement new features. Greater than 100 people have contributed to fio, and many have done so several times. Thanks to this commitment, a new version of fio is released roughly every 4-6 weeks, and fio is widely used as an industry standard benchmark, stress testing tool, and for IO verification purposes.
+
+Main Feature Set and Capabilities
+
+The two primary features in a good benchmark are being able to run the workload that you want and getting the desired units of output. Being flexible was (and continues to be) the main focus of fio. It supports workload options not found in other benchmarks along with rigorously detailed IO statistics. Any sort of random and sequential IO mix, or read/write mix, is easy to define. The internal design of fio is flexible as well. Defining a workload is completely separate from the IO engine (a term fio uses to signify how IO is delivered to the kernel). For instance, if you want to run a workload with native async on Linux and then compare the same workload on Windows, just change the single IO engine line to the native version on Windows. Or, if you want more detailed latency percentile statistics at the tail of the distribution, that's easy too. Just specify the exact percentiles in which you are interested and fio will track that for you.
+
+Though initially developed on Linux, the areas in fio that aren't tied to OS-specific features work on any platform from Windows to HP-UX to Android. There are also native IO engines on Linux, Windows, Solaris, etc. This is a key feature for mixed environments where you want to be able to run (as close to) identical workloads on different operating environments. Additionally, while fio is normally run directly on the target machine, it also supports network connections. You can run a server backend on the target machine(s) and run the data collection frontend on a client machine. This makes it easier to manage, especially if fio is often used on multiple machines.
+
+Fio is predominantly a text-based CLI application, though initial support exists for a cross-platform gtk-based GUI frontend (gfio). At the time of this publication, gfio is included with the latest fio release, v2.1, and it should be fairly stable. It is able to serve as a GUI frontend for any workload that the CLI client supports. It also provides basic support for GUI editing job options and workloads, though full support is still in development as gfio is a work in progress.
+
+Fio also supports three different types of output formats. The “classic” output is the default which dumps workload statistics at the end of the workload. There's also support for a CSV format, though that's slowly diminishing in favor of a JSON-based output format. The latter is far more flexible and has the advantage of being simple to parse for people and computers.
+
+Fio has been moving forward rapidly thanks to the synergy of its vibrant user and development community. It's easier to run than competing projects, flexible enough to accomplish users' tasks, and it has a low enough overhead to drive any kind of storage system at full speed. Couple that with its richer options and reporting than anything else out there, and fio is an excellent tool.
+
+Why using Fio
+
+As we've begun increasing both the quantity and depth of our enterprise storage reviews, we've been in need of a better benchmarking tool to accurately measure the performance of different storage products across multiple operating systems. Traditional workload generator software such as Iometer or Vdbench offer limited compatibility with their non-native OS, or they've had difficulty scaling loads for high-performance storage devices such as PCIe application accelerators or high-performance networked storage. Since our implementation of FIO began, it has solved many of these problems and has even gone a step further by supporting scripting for lengthy testing periods. This overall functionality makes it our synthetic benchmark of choice for all enterprise reviews.
+
+For our reviews, we use FIO to measure the performance of a storage device over a given period of time. For most products, that includes 6 hours of preconditioning before we drop into our main tests. For larger PCIe storage devices that may not enter steady-state for many hours into testing, we precondition for twice as long at 12 hours before our main tests commence. Our synthetic enterprise storage benchmark process begins with an analysis of the way the drive performs during a thorough preconditioning phase. Each of the comparable products are first secure erased using the vendor's tools and then preconditioned into steady-state with the same workload the device will be tested with under a heavy load of 16 threads with an outstanding queue of 16 per thread. Rounding out the process, we then test in set intervals in multiple thread/queue depth profiles to show performance under light and heavy usage.
+
+Preconditioning and Primary Steady-State Tests:
+
+- Throughput (Read+Write IOPS Aggregate)
+- Average Latency (Read+Write Latency Averaged Together)
+- Max Latency (Peak Read or Write Latency)
+- Latency Standard Deviation (Read+Write Standard Deviation Averaged Together)
+
+Our Enterprise Synthetic Workload Analysis includes different profiles to reflect some real-world tasks. These profiles have been developed to make it easier to compare to our past benchmarks as well as widely-published values such as max 4k read and write speed and 8k 70/30, which is commonly used for enterprise hardware.
+
+- 4k
+	+ 100% Read or 100% Write
+	+ 100% 4k
+	fio --filename=/dev/sdx --direct=1 --rw=randrw --refill_buffers --norandommap --randrepeat=0 --ioengine=libaio --bs=4k --rwmixread=100 --iodepth=16 --numjobs=16 --runtime=60 --group_reporting --name=4ktest
+
+- 8k 70/30 
+	+ 70% Read, 30% Write
+	+ 100% 8k
+	fio --filename=/dev/sdx --direct=1 --rw=randrw --refill_buffers --norandommap --randrepeat=0 --ioengine=libaio --bs=8k --rwmixread=70 --iodepth=16 --numjobs=16 --runtime=60 --group_reporting --name=8k7030test
+
