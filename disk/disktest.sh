@@ -9,29 +9,47 @@ COMMAND="$5"
 
 function usage(){
   echo "./disktest.sh <conf> <user> <key> <host> <command>"
+  echo "    Command could be:"
+  echo "        * setup-host:   to set-up the host"
+  echo "        * setup-test:   to prepare the test"
+  echo "        * run:          run test on host"
+  echo "        * collect-data: collect the data"
+  echo "        * clean:        clean the host"
 }
 
 CONFNAME="$( basename $CONF )"
 TestDir="$(grep 'directory=' $CONF | awk -F"=" '{print $2}')"
 
-if [ "$COMMAND" = "setup" ]; then
+if [ "$COMMAND" = "setup-host" ]; then
+    # Setup host only
     ssh -i $KEY $USER@$TARGET "mkdir ~/disktest"
 	ssh -i $KEY $USER@$TARGET "sudo apt-get install -y fio"
-    scp -i $KEY $CONF $USER@$TARGET:~/disktest/$CONFNAME
 	scp -i $KEY targetrun.sh $USER@$TARGET:~/disktest/targetrun.sh
 	ssh -i $KEY $USER@$TARGET "chmod a+x ~/disktest/targetrun.sh"
-	ssh -i $KEY $USER@$TARGET "cat 1 > ~/disktest/.setup"
+	ssh -i $KEY $USER@$TARGET "echo 1 > ~/disktest/.setuphost"
+elif [ "$COMMAND" = "setup-test" ]; then
+    # Setup host to for each test
+	SETUPDONE="$(ssh -i $KEY $USER@$TARGET 'cat ~/disktest/.setuphost')"
+	if [ $SETUPDONE -eq 1 ]; then
+        scp -i $KEY $CONF $USER@$TARGET:~/disktest/$CONFNAME
+	    ssh -i $KEY $USER@$TARGET "mkdir -p $TestDir"
+		ssh -i $KEY $USER@$TARGET "echo 1 > ~/disktest/.setuptest"
+	fi
 elif [ "$COMMAND" = "run" ]; then
-    SETUPDONE="$(ssh -i $KEY $USER@$TARGET 'cat ~/disktest/.setup')"
+    # Running test
+    SETUPDONE="$(ssh -i $KEY $USER@$TARGET 'cat ~/disktest/.setuptest')"
     if [ $SETUPDONE -eq 1 ]; then
         ssh -i $KEY $USER@$TARGET "./targetrun.sh $CONFNAME $TestDir"
     else
         echo "Please setup host first"
 	    exit 1
 	fi
+elif [ "$COMMAND" = "collect-data" ]; then
+    mkdir testout
+    scp -i $KEY $USER@$TARGET:~/disktest/*.diskout testout/    
 elif [ "$COMMAND" = "clean" ]; then
     SETUPDONE="$(ssh -i $KEY $USER@$TARGET 'cat ~/disktest/.setup')"
-    if [ $SETUPDONE -eq 1 ]; then
+    if [ "$SETUPDONE" = "$CONF"  ]; then
         ssh -i $KEY $USER@$TARGET "rm -rf ~/disktest"
 	fi
 else
