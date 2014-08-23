@@ -26,13 +26,10 @@ vm4::
 # size: size to transfer for each connection in byte: K,M,G
 # parallel: send in parallel; series: send in series from top to bottom
 # when there are multiple blocks, run each block then move to next block (like series)
+output="networktest.out"
 [parallel]
 vm1>vm2:tcp:60s:2 
 vm2>vm3:udp:20M:1
-vm3>vm4:tcp:60s:2
-[parallel]
-vm1>vm2:tcp:60s:2 
-vm3>vm4:udp:20M:2
 [series]
 vm1>vm2:tcp:60s:2 
 vm2>vm3:udp:20M:2
@@ -42,11 +39,28 @@ vm1>vm2:tcp:60s:2
 vm2>vm3:udp:20M:2
 vm3>vm4:tcp:60s:2
 
+# or using network communication pattern in Hadoop to run measurement
+[HADOOP-PATTERN-NETWORK]
+# List of patterns:
+#     broadcast(source): all other node is receiver, source is sender
+#     shuffle(mapper(vm1,vm2,vm3),reducer(vm1,vm2,vm3)): all mappers send to one reducer = m.r flows
+#     aggregate(contributor(vm1,vm2,vm3),aggregator(vm1)): like shuffle(mapper(vm1,vm2,vm3),reducer(vm1))
+#     parallelrw(pair(vm1,vm1),pair(vm2,vm2),pair(vm3,vm3)): send in pair
+#     one2one(vm1,vm2):
+#     all2all(vm1,vm2,vm3):
+output="hadooptest.out"
+broadcast(vm1):tcp:60s:1
+shuffle(mapper(vm1,vm2,vm3),reducer(vm1,vm2,vm3)):tcp:30s:1
+
 # Scenario for disk measurement
 [DISK]
-# type of disk test: select a .fio file. There will be some files to choose.
-disk.config=“randomseek.fio”
-# By default, test all the nodes, if want to exclude nodes, put them in ignoring tag
+# There will be some files to choose.
+#     randomseek.fio: one thread read/write by 50%/50% randomly access block
+#     hadoop.fio: one thread sequence read, 128 MBs
+#     hadoopstress.fio: 4 threads sequence read/write 3 read/1 write, 128MBs
+disk.config=“hadoopintensive.fio”
+output="disktest.out"
+# By default, test all the nodes, if want to exclude nodes, put them in ignoring block
 [ignore]
 vm2
 

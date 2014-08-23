@@ -1,3 +1,4 @@
+INSTALLING
 Install FIO on CentOS 6.4 Minimal
 # yum install libaio* gcc wget make
 # wget http://brick.kernel.dk/snaps/fio-2.1.11.tar.gz
@@ -7,11 +8,14 @@ Install FIO on CentOS 6.4 Minimal
 # make
 # make install
 
-Introduction
+Install FIO on Ubuntu
+# apt-get install -y fio
+
+INTRODUCTION
 
 Fio is short for Flexible IO, a versatile IO workload generator. Back in 2005, Jens Axboe, the backbone behind and author of the IO stack in the Linux kernel, was weary of constantly writing one-off test programs to benchmark or verify changes to the Linux IO subsystem. As a result, fio was born to make the job a lot easier. It was flexible enough to allow detailed workload setups, and it contained the necessary reporting to make sense of the data at completion. Jens continued working on fio when he joined Oracle and, later, Fusion-io. Today, the fio community of users is active and engaged in development, and consequently they continually develop fio and implement new features. Greater than 100 people have contributed to fio, and many have done so several times. Thanks to this commitment, a new version of fio is released roughly every 4-6 weeks, and fio is widely used as an industry standard benchmark, stress testing tool, and for IO verification purposes.
 
-Main Feature Set and Capabilities
+MAIN FEATURE SET AND CAPABILITIES
 
 The two primary features in a good benchmark are being able to run the workload that you want and getting the desired units of output. Being flexible was (and continues to be) the main focus of fio. It supports workload options not found in other benchmarks along with rigorously detailed IO statistics. Any sort of random and sequential IO mix, or read/write mix, is easy to define. The internal design of fio is flexible as well. Defining a workload is completely separate from the IO engine (a term fio uses to signify how IO is delivered to the kernel). For instance, if you want to run a workload with native async on Linux and then compare the same workload on Windows, just change the single IO engine line to the native version on Windows. Or, if you want more detailed latency percentile statistics at the tail of the distribution, that's easy too. Just specify the exact percentiles in which you are interested and fio will track that for you.
 
@@ -23,7 +27,7 @@ Fio also supports three different types of output formats. The “classic” out
 
 Fio has been moving forward rapidly thanks to the synergy of its vibrant user and development community. It's easier to run than competing projects, flexible enough to accomplish users' tasks, and it has a low enough overhead to drive any kind of storage system at full speed. Couple that with its richer options and reporting than anything else out there, and fio is an excellent tool.
 
-Why using Fio
+WHY USING FIO
 
 As we've begun increasing both the quantity and depth of our enterprise storage reviews, we've been in need of a better benchmarking tool to accurately measure the performance of different storage products across multiple operating systems. Traditional workload generator software such as Iometer or Vdbench offer limited compatibility with their non-native OS, or they've had difficulty scaling loads for high-performance storage devices such as PCIe application accelerators or high-performance networked storage. Since our implementation of FIO began, it has solved many of these problems and has even gone a step further by supporting scripting for lengthy testing periods. This overall functionality makes it our synthetic benchmark of choice for all enterprise reviews.
 
@@ -47,4 +51,12 @@ Our Enterprise Synthetic Workload Analysis includes different profiles to reflec
 	+ 70% Read, 30% Write
 	+ 100% 8k
 	fio --filename=/dev/sdx --direct=1 --rw=randrw --refill_buffers --norandommap --randrepeat=0 --ioengine=libaio --bs=8k --rwmixread=70 --iodepth=16 --numjobs=16 --runtime=60 --group_reporting --name=8k7030test
+
+WORKLOAD DESIGN FOR HADOOP
+- Hadoop use block size of 128 MBs => we should use data size of 128 MBs
+- A medium-size VM often has 4GBs of memory and 1 or 2 vcores => it often has 4 containers for executing jobs => we should use have 4 concurrent thread accessing the disk at the same time
+- Mapper is more likely to outnumber the reducer => We should have 3 threads reading data and 1 thread writing data
+- Hadoop read and write file sequentially => we should use sequence read and sequence write
+- In virtualized environment, VM can be colocated on the same host so it may happen that thet use the same disk => We should take care also on running benchmark simultaneously on many VMs of the same host
+- Block size on 128MBs seems too small for for a test, the execution time would not take long and we cannot be sure that many fio test are happenned concurrently. We should run many FIO in series to guaranti all VMs access disk at the same time.
 
