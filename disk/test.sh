@@ -17,10 +17,26 @@ for HOST in $HOSTLIST; do
     ./disktest.sh $CONF $USER $KEY $HOST setup-test
 done
 
+# Run measurement in parallel on host
 echo "Running the test"
 for HOST in $HOSTLIST; do
-    ./disktest.sh $CONF $USER $KEY $HOST run
+    ./disktest.sh $CONF $USER $KEY $HOST run &
 done
+
+# Wait for all hosts to complete
+FAIL=0
+for job in `jobs -p`
+do
+    echo $job
+    wait $job || let "FAIL+=1"
+done
+
+if [ "$FAIL" == "0" ];
+then
+    echo "Tests ran well"
+else
+    echo "There is/are ($FAIL) test/s"
+fi
 
 echo "Collecting test output"
 for HOST in $HOSTLIST; do
