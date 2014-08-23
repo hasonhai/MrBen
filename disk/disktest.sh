@@ -18,9 +18,13 @@ function usage(){
 }
 
 CONFNAME="$( basename $CONF )"
-echo "Config file: $CONFNAME"
+# echo "Config file: $CONFNAME"
 TestDir="$(grep 'directory=' $CONF | awk -F"=" '{print $2}')"
-echo "FIO test directory: $TestDir"
+# echo "FIO test directory: $TestDir"
+if [ "$TestDir" = "" ]; then
+    echo "Test directory for Fio is not set!"
+    exit 1
+else
 
 if [ "$COMMAND" = "setup-host" ]; then
     # Setup host only
@@ -46,7 +50,7 @@ elif [ "$COMMAND" = "run" ]; then
     SETUPDONE="$(ssh -i $KEY $USER@$TARGET 'cat ~/MrBentest/.setuptest')"
     if [ $SETUPDONE -eq 1 ]; then
         echo "Running test on $TARGET"
-        ssh -i $KEY $USER@$TARGET "~/MrBentest/targetrun.sh $CONFNAME $TestDir"
+        ssh -i $KEY $USER@$TARGET "~/MrBentest/targetrun.sh MrBentest/$CONFNAME $TestDir"
     else
         echo "Please setup host first"
 	    exit 1
