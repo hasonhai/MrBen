@@ -39,7 +39,7 @@ elif [ "$COMMAND" = "run" ]; then
     # Running test
     SETUPDONE="$(ssh -i $KEY $USER@$TARGET 'cat ~/MrBentest/.setuptest')"
     if [ $SETUPDONE -eq 1 ]; then
-        ssh -i $KEY $USER@$TARGET "./targetrun.sh $CONFNAME $TestDir"
+        ssh -i $KEY $USER@$TARGET "~/MrBentest/targetrun.sh $CONFNAME $TestDir"
     else
         echo "Please setup host first"
 	    exit 1
