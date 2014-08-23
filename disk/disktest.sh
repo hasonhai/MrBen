@@ -18,13 +18,18 @@ function usage(){
 }
 
 CONFNAME="$( basename $CONF )"
+echo "Config file: $CONFNAME"
 TestDir="$(grep 'directory=' $CONF | awk -F"=" '{print $2}')"
+echo "Test directory: $TestDir"
 
 if [ "$COMMAND" = "setup-host" ]; then
     # Setup host only
-    ssh -i $KEY $USER@$TARGET "mkdir ~/MrBentest"
-	ssh -i $KEY $USER@$TARGET "mkdir ~/diskout"
-	ssh -i $KEY $USER@$TARGET "sudo apt-get install -y fio"
+    ssh -i $KEY $USER@$TARGET "mkdir ~/MrBentest > /dev/null"
+	ssh -i $KEY $USER@$TARGET "mkdir ~/diskout > /dev/null"
+	FIOCHECK="$(ssh -i $KEY $USER@$TARGET "which fio")"
+	if [ "$FIOCHECK" != "/usr/bin/fio"]; then
+	    ssh -i $KEY $USER@$TARGET "sudo apt-get install -y fio"
+	fi
 	scp -i $KEY targetrun.sh $USER@$TARGET:~/MrBentest/targetrun.sh
 	ssh -i $KEY $USER@$TARGET "chmod a+x ~/MrBentest/targetrun.sh"
 	ssh -i $KEY $USER@$TARGET "echo 1 > ~/MrBentest/.setuphost"
@@ -40,18 +45,22 @@ elif [ "$COMMAND" = "run" ]; then
     # Running test
     SETUPDONE="$(ssh -i $KEY $USER@$TARGET 'cat ~/MrBentest/.setuptest')"
     if [ $SETUPDONE -eq 1 ]; then
+        echo "Running test on $TARGET"
         ssh -i $KEY $USER@$TARGET "~/MrBentest/targetrun.sh $CONFNAME $TestDir"
     else
         echo "Please setup host first"
 	    exit 1
 	fi
 elif [ "$COMMAND" = "collect-data" ]; then
-    mkdir testout
+    mkdir testout > /dev/null
+	echo "Collect test result"
     scp -i $KEY $USER@$TARGET:~/diskout/*.diskout testout/    
 elif [ "$COMMAND" = "clean" ]; then
     SETUPDONE="$(ssh -i $KEY $USER@$TARGET 'cat ~/MrBentest/.setuphost')"
     if [ $SETUPDONE -eq 1  ]; then
+        echo "Removing temporary directory"
         ssh -i $KEY $USER@$TARGET "rm -rf ~/MrBentest"
+		echo "Removing test output on host $TARGET"
 		ssh -i $KEY $USER@$TARGET "rm -rf ~/diskout"
 	fi
 else
