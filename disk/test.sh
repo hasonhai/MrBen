@@ -1,7 +1,7 @@
 #!/bin/bash
 # To test the script for disk test
 
-HOSTLIST=$( cat hosts.lst )
+HOSTLIST=$( cat testdir/hosts.lst )
 KEY="testdir/hasonhai.cer"
 USER="ubuntu"
 CONF="testdir/random-read-test.fio"
