@@ -9,4 +9,4 @@ TestDir="$2"
 HostName="$( hostname -f )"
 Now="$(date +'%Y%m%d%H%M')"
 
-fio $Conf --minimal > $Hostname$Now.diskout
+fio $Conf --minimal > diskout/$HostName$Now.diskout
