@@ -14,7 +14,6 @@ done
 
 echo "Setup the test"
 for HOST in $HOSTLIST; do
-    echo "Setup the test"
     ./disktest.sh $CONF $USER $KEY $HOST setup-test
 done
 

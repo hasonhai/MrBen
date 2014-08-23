@@ -18,12 +18,14 @@ function usage(){
 }
 
 CONFNAME="$( basename $CONF )"
+echo "Config file: $CONFNAME"
 TestDir="$(grep 'directory=' $CONF | awk -F"=" '{print $2}')"
+echo "FIO test directory: $TestDir"
 
 if [ "$COMMAND" = "setup-host" ]; then
     # Setup host only
-    ssh -i $KEY $USER@$TARGET "mkdir ~/MrBentest > /dev/null"
-	ssh -i $KEY $USER@$TARGET "mkdir ~/diskout > /dev/null"
+    ssh -i $KEY $USER@$TARGET "mkdir ~/MrBentest"
+	ssh -i $KEY $USER@$TARGET "mkdir ~/diskout"
 	FIOCHECK="$(ssh -i $KEY $USER@$TARGET "which fio")"
 	if [ "$FIOCHECK" != "/usr/bin/fio" ]; then
 	    ssh -i $KEY $USER@$TARGET "sudo apt-get install -y fio"
@@ -36,7 +38,7 @@ elif [ "$COMMAND" = "setup-test" ]; then
 	SETUPDONE="$(ssh -i $KEY $USER@$TARGET 'cat ~/MrBentest/.setuphost')"
 	if [ $SETUPDONE -eq 1 ]; then
         scp -i $KEY $CONF $USER@$TARGET:~/MrBentest/$CONFNAME
-	    ssh -i $KEY $USER@$TARGET "mkdir -p $TestDir > /dev/null"
+	    ssh -i $KEY $USER@$TARGET "mkdir -p $TestDir"
 		ssh -i $KEY $USER@$TARGET "echo 1 > ~/MrBentest/.setuptest"
 	fi
 elif [ "$COMMAND" = "run" ]; then
@@ -50,7 +52,7 @@ elif [ "$COMMAND" = "run" ]; then
 	    exit 1
 	fi
 elif [ "$COMMAND" = "collect-data" ]; then
-    mkdir testout > /dev/null
+    mkdir testout
 	echo "Collect test result"
     scp -i $KEY $USER@$TARGET:~/diskout/*.diskout testout/    
 elif [ "$COMMAND" = "clean" ]; then
