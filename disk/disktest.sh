@@ -18,16 +18,14 @@ function usage(){
 }
 
 CONFNAME="$( basename $CONF )"
-echo "Config file: $CONFNAME"
 TestDir="$(grep 'directory=' $CONF | awk -F"=" '{print $2}')"
-echo "Test directory: $TestDir"
 
 if [ "$COMMAND" = "setup-host" ]; then
     # Setup host only
     ssh -i $KEY $USER@$TARGET "mkdir ~/MrBentest > /dev/null"
 	ssh -i $KEY $USER@$TARGET "mkdir ~/diskout > /dev/null"
 	FIOCHECK="$(ssh -i $KEY $USER@$TARGET "which fio")"
-	if [ "$FIOCHECK" != "/usr/bin/fio"]; then
+	if [ "$FIOCHECK" != "/usr/bin/fio" ]; then
 	    ssh -i $KEY $USER@$TARGET "sudo apt-get install -y fio"
 	fi
 	scp -i $KEY targetrun.sh $USER@$TARGET:~/MrBentest/targetrun.sh
@@ -38,7 +36,7 @@ elif [ "$COMMAND" = "setup-test" ]; then
 	SETUPDONE="$(ssh -i $KEY $USER@$TARGET 'cat ~/MrBentest/.setuphost')"
 	if [ $SETUPDONE -eq 1 ]; then
         scp -i $KEY $CONF $USER@$TARGET:~/MrBentest/$CONFNAME
-	    ssh -i $KEY $USER@$TARGET "mkdir -p $TestDir"
+	    ssh -i $KEY $USER@$TARGET "mkdir -p $TestDir > /dev/null"
 		ssh -i $KEY $USER@$TARGET "echo 1 > ~/MrBentest/.setuptest"
 	fi
 elif [ "$COMMAND" = "run" ]; then

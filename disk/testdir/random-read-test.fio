@@ -1,6 +1,6 @@
-; random read of 128mb of data
+; random read of 256mb of data
 
 [random-read]
 rw=randread
-size=128m
+size=256m
 directory=/tmp/fio-testing/data

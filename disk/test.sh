@@ -4,7 +4,7 @@
 HOSTLIST=$( cat testdir/hosts.lst )
 KEY="testdir/hasonhai.cer"
 USER="ubuntu"
-CONF="testdir/random-read-test.fio"
+CONF="testdir/four-threads-randio.fio"
 
 chmod a+x disktest.sh
 for HOST in $HOSTLIST; do
