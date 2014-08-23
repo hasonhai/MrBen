@@ -24,7 +24,7 @@ TestDir="$(grep 'directory=' $CONF | awk -F"=" '{print $2}')"
 if [ "$TestDir" = "" ]; then
     echo "Test directory for Fio is not set!"
     exit 1
-else
+fi
 
 if [ "$COMMAND" = "setup-host" ]; then
     # Setup host only
