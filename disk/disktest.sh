@@ -56,7 +56,7 @@ elif [ "$COMMAND" = "run" ]; then
 	    exit 1
 	fi
 elif [ "$COMMAND" = "collect-data" ]; then
-    if [ ! -d "$DIRECTORY" ]; then
+    if [ ! -d "testout" ]; then
          mkdir testout
     fi
 	echo "Collect test result"

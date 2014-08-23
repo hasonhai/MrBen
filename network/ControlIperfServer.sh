@@ -7,7 +7,7 @@ HOST_NAME=`hostname`
 CONSOLE_OUTPUT="iperf$( date +%m%d ).console"
 if [ "$1" = start ]; then
     if [ "" = "$(pidof iperf)" ]; then
-        echo $(date) $FILENAME >> $CONSOLE_OUTPUT
+        echo $(date) >> $CONSOLE_OUTPUT
         nohup iperf -s > /dev/null &>> $CONSOLE_OUTPUT &
         echo [$HOST_NAME] IPERF SERVER started\!
     else
