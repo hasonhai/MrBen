@@ -56,7 +56,9 @@ elif [ "$COMMAND" = "run" ]; then
 	    exit 1
 	fi
 elif [ "$COMMAND" = "collect-data" ]; then
-    mkdir testout
+    if [ ! -d "$DIRECTORY" ]; then
+         mkdir testout
+    fi
 	echo "Collect test result"
     scp -i $KEY $USER@$TARGET:~/diskout/*.diskout testout/    
 elif [ "$COMMAND" = "clean" ]; then

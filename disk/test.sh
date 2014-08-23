@@ -4,7 +4,7 @@
 HOSTLIST=$( cat testdir/hosts.lst )
 KEY="testdir/hasonhai.cer"
 USER="ubuntu"
-CONF="testdir/four-threads-randio.fio"
+CONF="testdir/random-read-test.fio"
 
 chmod a+x disktest.sh
 echo "Setup the host"
