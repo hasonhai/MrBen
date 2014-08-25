@@ -2,7 +2,6 @@
 MrBen stands for Map Reduce BenchMarking, its name is complex like that and tied to the MapReduce platform but its existing goal is more far simple and basic. I need to have a program to read scenario file, in that scenario, a test plan is described which tell the program that how many nodes will involve, how we want to test the network, the connection between nodes, the kind of i/o workload that we want to run on the nodes, etc <br>
 This program is mixed of Python and Bash script, because I only know those two :'( <br>
 
-
 <h2>Structure </h2>
 <ul>
 <li>Scenarios: scenarios describing the test. You can read the sample scenario to understand how we can describe the test</li>
@@ -19,3 +18,14 @@ The two primary features in a good benchmark are being able to run the workload 
 Fio also supports three different types of output formats. The “classic” output is the default which dumps workload statistics at the end of the workload. There's also support for a CSV format, though that's slowly diminishing in favor of a JSON-based output format. The latter is far more flexible and has the advantage of being simple to parse for people and computers.<br>
 <b>Why we use iperf?</b> <br>
 
+<h2>Progress </h2>
+<ul>
+<li>disk test: done</li>
+<li>network test: not yet</li>
+<li>parse output: not yet</li>
+<li>parse scenario: not yet</li>
+<li>main program: not yet</li>
+<li>scripts support OpenStack: not yet</li>
+<li>scripts support EC2: not yet</li>
+<li>scripts support drawing output figures: not yet</li>
+</ul>
