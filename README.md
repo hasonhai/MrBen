@@ -29,3 +29,9 @@ Fio also supports three different types of output formats. The “classic” out
 <li>scripts support EC2: not yet</li>
 <li>scripts support drawing output figures: not yet</li>
 </ul>
+
+<h2>Support systems </h2>
+<ul>
+<li>Ubuntu</li>
+<li>CentOS (not yet)</li>
+</ul>
