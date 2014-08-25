@@ -5,13 +5,12 @@ This program is mixed of Python and Bash script, because I only know those two :
 
 <h2>Structure </h2>
 <ul>
-<li>scenarios: scenarios describing the test </li>
-<li>setup: scripts to prepare machine before the test </li>
-<li>network: scripts to benchmark the network </li>
-<li>networkconf: config files for network benchmark </li>
-<li>disk: scripts to benchmark the storage </li>
-<li>diskconf: config files for storage benchmark </li>
-<li>customscript: scripts to run before the test start </li>
+<li>Scenarios: scenarios describing the test. You can read the sample scenario to understand how we can describe the test</li>
+<li>Setup: scripts to prepare machine before the test. We may need to create a VM to run the tests on, or we may need to install some program on the host before the host start </li>
+<li>Network: scripts to benchmark the network. This script is use to start the iperf server on the tested host, it then based on the configuration of the next to initiate the network connection with iperf client. We may have many kinds of network pattern: one-to-one, broadcast, shuffle (hadoop), aggregate, parallel</li>
+<li>disk: scripts to benchmark the storage. The script is very simple, its upload the config file to the host, run the benchmark on it, then copy it back to your workstation</li>
+<li>diskconf: config files for storage benchmark, depended on the kind of workload that we want to simulate that we different config file. For example, I need config file Hadoop pattern, you may need different config file for your program </li>
+<li>customscript: scripts to run before the test start. We can insert some script using OpenStack, EC2 API to create the nodes and ask the program to run the benchmark on them</li>
 </ul>
 <h2>Goals </h2>
 The tool is use to benchmark a distributed system. We use Flexible IO (FIO) to measure the disk performance and Iperf to measure network performance. <br>
