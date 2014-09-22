@@ -67,6 +67,7 @@ shuffle(mapper(vm1,vm2,vm3),reducer(vm1,vm2,vm3)):tcp:30s:1
 #     hadoopstress.fio: 4 threads sequence read/write 3 read/1 write, 128MBs
 disk.config=“hadoopintensive.fio”
 output="disktest.out"
+mode="concurrent" #or "continuous"
 # By default, test all the nodes, if want to exclude nodes, put them in ignoring block
 [ignore]
 vm2
