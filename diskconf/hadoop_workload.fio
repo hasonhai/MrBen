@@ -1,0 +1,20 @@
+; Four threads, two query, two writers.
+
+[global]
+rw=read
+size=256m
+directory=/tmp/fio-testing/data
+ioengine=libaio
+iodepth=16
+invalidate=1
+direct=1
+bs=8k
+
+[mapper1]
+
+[mapper2]
+
+[mapper3]
+
+[reducer]
+rw=write
