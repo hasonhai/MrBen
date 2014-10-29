@@ -58,9 +58,9 @@ shuffle(mapper(vm1,vm2,vm3),reducer(vm1,vm2,vm3)):tcp:30s:1
 #     randomseek.fio: one thread read/write by 50%/50% randomly access block
 #     hadoop.fio: one thread sequence read, 128 MBs
 #     hadoopstress.fio: 4 threads sequence read/write 3 read/1 write, 128MBs
-disk.config=“hadoopintensive.fio”
-output="disktest.out"
-mode="concurrent" #or "continuous"
+disk.config=“hadoopstress.fio”
+disk.output="disktest.out"
+disk.mode="concurrent" #or "continuous"
 # By default, test all the nodes, if want to exclude nodes, put them in ignoring block
 [ignore]
 vm2
